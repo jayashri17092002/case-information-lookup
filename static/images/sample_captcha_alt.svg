@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="180" height="60" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="noise" patternUnits="userSpaceOnUse" width="4" height="4">
+      <rect width="4" height="4" fill="#f8f9fa"/>
+      <circle cx="2" cy="2" r="0.5" fill="#dee2e6"/>
+    </pattern>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="180" height="60" fill="url(#noise)" stroke="#ced4da" stroke-width="1"/>
+  
+  <!-- Distortion lines -->
+  <path d="M 10 20 Q 50 10 90 25 T 170 15" stroke="#6c757d" stroke-width="1" fill="none" opacity="0.3"/>
+  <path d="M 5 40 Q 60 50 120 35 T 175 45" stroke="#6c757d" stroke-width="1" fill="none" opacity="0.3"/>
+  
+  <!-- CAPTCHA Text: XYZ89 -->
+  <text x="30" y="40" font-family="Arial, sans-serif" font-size="24" font-weight="bold" 
+        fill="#495057" transform="rotate(-2 30 40)">X</text>
+  <text x="55" y="38" font-family="Arial, sans-serif" font-size="24" font-weight="bold" 
+        fill="#343a40" transform="rotate(3 55 38)">Y</text>
+  <text x="80" y="42" font-family="Arial, sans-serif" font-size="24" font-weight="bold" 
+        fill="#495057" transform="rotate(-1 80 42)">Z</text>
+  <text x="105" y="39" font-family="Arial, sans-serif" font-size="24" font-weight="bold" 
+        fill="#343a40" transform="rotate(2 105 39)">8</text>
+  <text x="130" y="41" font-family="Arial, sans-serif" font-size="24" font-weight="bold" 
+        fill="#495057" transform="rotate(-2 130 41)">9</text>
+  
+  <!-- Additional noise dots -->
+  <circle cx="25" cy="15" r="1" fill="#adb5bd" opacity="0.4"/>
+  <circle cx="65" cy="20" r="1" fill="#adb5bd" opacity="0.4"/>
+  <circle cx="110" cy="18" r="1" fill="#adb5bd" opacity="0.4"/>
+  <circle cx="145" cy="22" r="1" fill="#adb5bd" opacity="0.4"/>
+  <circle cx="40" cy="50" r="1" fill="#adb5bd" opacity="0.4"/>
+  <circle cx="85" cy="52" r="1" fill="#adb5bd" opacity="0.4"/>
+  <circle cx="125" cy="48" r="1" fill="#adb5bd" opacity="0.4"/>
+  <circle cx="160" cy="50" r="1" fill="#adb5bd" opacity="0.4"/>
+</svg>

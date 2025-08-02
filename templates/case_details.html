@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case Details - Court Lookup</title>
+    <meta name="description" content="Detailed case information including parties, proceedings, and document downloads from Delhi courts.">
+    
+    <!-- CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <!-- Header -->
+    <header class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <i class="fas fa-gavel text-primary me-2 fs-4"></i>
+                <div>
+                    <h1 class="mb-0 fs-5 fw-bold">Court Lookup</h1>
+                    <small class="text-muted">Case Details</small>
+                </div>
+            </a>
+            <a href="/" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-2"></i>
+                Back to Search
+            </a>
+        </div>
+    </header>
+
+    <div class="container py-4">
+        <!-- Loading State -->
+        <div id="loadingState" class="text-center py-5">
+            <div class="loading-spinner mb-3"></div>
+            <h4 class="mb-2">Retrieving Case Information</h4>
+            <p class="text-muted">Please wait while we fetch the case details...</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="errorState" class="d-none">
+            <div class="card border-danger">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-exclamation-triangle text-danger mb-3" style="font-size: 3rem;"></i>
+                    <h4 class="text-danger mb-3" id="errorTitle">Error</h4>
+                    <p class="text-muted mb-4" id="errorMessage">An error occurred while retrieving case information.</p>
+                    <div class="d-flex gap-2 justify-content-center">
+                        <button class="btn btn-primary" onclick="loadCaseDetails()">
+                            <i class="fas fa-refresh me-2"></i>Try Again
+                        </button>
+                        <a href="/" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Search
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Case Details Content -->
+        <div id="caseContent" class="d-none">
+            <!-- Case Overview -->
+            <div class="card case-info-card mb-4">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h2 class="h5 mb-0">
+                            <i class="fas fa-folder-open text-primary me-2"></i>
+                            Case Information
+                        </h2>
+                        <span class="status-badge" id="caseStatus">Loading...</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2">Case Number</h6>
+                            <p class="fw-bold mb-3" id="caseNumber">-</p>
+                            
+                            <h6 class="text-muted mb-2">Filing Date</h6>
+                            <p class="mb-3" id="filingDate">-</p>
+                            
+                            <h6 class="text-muted mb-2">Court</h6>
+                            <p class="mb-0" id="court">-</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted mb-2">Case Type</h6>
+                            <p class="mb-3" id="caseType">-</p>
+                            
+                            <h6 class="text-muted mb-2">Next Hearing</h6>
+                            <p class="mb-3" id="nextHearing">-</p>
+                            
+                            <h6 class="text-muted mb-2">Presiding Judge</h6>
+                            <p class="mb-0" id="judge">-</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Parties Information -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-user me-2"></i>Petitioner(s)
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text" id="petitioner">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header bg-secondary text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-users me-2"></i>Respondent(s)
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text" id="respondent">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Case Proceedings -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list-alt text-primary me-2"></i>
+                        Case Proceedings
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="proceedings">
+                        <div class="text-center py-3">
+                            <div class="loading-spinner"></div>
+                            <p class="text-muted mt-2">Loading proceedings...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Documents Section -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-file-pdf text-primary me-2"></i>
+                        Orders & Documents
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="documents">
+                        <div class="text-center py-3">
+                            <div class="loading-spinner"></div>
+                            <p class="text-muted mt-2">Loading documents...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-top mt-5">
+        <div class="container py-4">
+            <div class="row">
+                <div class="col-md-8">
+                    <p class="text-muted small mb-0">
+                        <strong>Disclaimer:</strong> This information is fetched from official court websites. 
+                        For the most current and legally binding information, please verify directly with the court.
+                    </p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <small class="text-muted">Delhi Court Lookup System</small>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Get query ID from URL
+        const queryId = {{ query_id }};
+        
+        // Load case details on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCaseDetails();
+        });
+
+        async function loadCaseDetails() {
+            try {
+                showLoading();
+                
+                const response = await fetch(`/api/cases/query/${queryId}`);
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to load case details');
+                }
+                
+                if (data.status === 'pending') {
+                    // Still processing, retry in 2 seconds
+                    setTimeout(loadCaseDetails, 2000);
+                    return;
+                }
+                
+                if (data.status === 'failed') {
+                    showError('Case Not Found', data.error || 'The requested case could not be found or retrieved.');
+                    return;
+                }
+                
+                // Display case details
+                displayCaseDetails(data);
+                
+            } catch (error) {
+                console.error('Error loading case details:', error);
+                showError('Loading Error', error.message);
+            }
+        }
+
+        function showLoading() {
+            document.getElementById('loadingState').classList.remove('d-none');
+            document.getElementById('errorState').classList.add('d-none');
+            document.getElementById('caseContent').classList.add('d-none');
+        }
+
+        function showError(title, message) {
+            document.getElementById('errorTitle').textContent = title;
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('loadingState').classList.add('d-none');
+            document.getElementById('errorState').classList.remove('d-none');
+            document.getElementById('caseContent').classList.add('d-none');
+        }
+
+        function displayCaseDetails(data) {
+            // Hide loading and error states
+            document.getElementById('loadingState').classList.add('d-none');
+            document.getElementById('errorState').classList.add('d-none');
+            document.getElementById('caseContent').classList.remove('d-none');
+            
+            // Check if caseDetail exists
+            if (!data.caseDetail) {
+                console.error('No case detail found in response:', data);
+                showError('Data Error', 'Case details not found in response');
+                return;
+            }
+            
+            // Update case information
+            document.getElementById('caseNumber').textContent = data.caseDetail.caseNumber || 'N/A';
+            document.getElementById('caseType').textContent = formatCaseType(data.caseDetail.caseType || '');
+            document.getElementById('filingDate').textContent = data.caseDetail.filingDate || 'Not available';
+            document.getElementById('court').textContent = data.caseDetail.court || 'Not specified';
+            document.getElementById('nextHearing').textContent = data.caseDetail.lastUpdate || 'Not scheduled';
+            document.getElementById('judge').textContent = data.caseDetail.judge || 'Not assigned';
+            
+            // Update status
+            const statusElement = document.getElementById('caseStatus');
+            statusElement.textContent = data.caseDetail.currentStatus || 'Active';
+            statusElement.className = 'status-badge status-success';
+            
+            // Update parties
+            document.getElementById('petitioner').textContent = data.caseDetail.petitioner || 'Not available';
+            document.getElementById('respondent').textContent = data.caseDetail.respondent || 'Not available';
+            
+            // Display proceedings
+            displayProceedings(data.caseDetail.proceedings || []);
+            
+            // Display documents
+            displayDocuments(data.documents || []);
+        }
+
+        function displayProceedings(proceedings) {
+            const proceedingsContainer = document.getElementById('proceedings');
+            
+            if (proceedings.length === 0) {
+                proceedingsContainer.innerHTML = `
+                    <div class="text-center py-4">
+                        <i class="fas fa-calendar-times text-muted" style="font-size: 2rem;"></i>
+                        <p class="text-muted mt-2">No proceedings available</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const proceedingsHtml = proceedings.map(proceeding => `
+                <div class="proceeding-item border-start border-primary border-3 ps-3 mb-3">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="mb-1">${proceeding.title}</h6>
+                            <p class="text-muted small mb-1">${proceeding.description}</p>
+                        </div>
+                        <span class="badge bg-light text-dark">${proceeding.date}</span>
+                    </div>
+                </div>
+            `).join('');
+            
+            proceedingsContainer.innerHTML = proceedingsHtml;
+        }
+
+        function displayDocuments(documents) {
+            const documentsContainer = document.getElementById('documents');
+            
+            if (documents.length === 0) {
+                documentsContainer.innerHTML = `
+                    <div class="text-center py-4">
+                        <i class="fas fa-file-times text-muted" style="font-size: 2rem;"></i>
+                        <p class="text-muted mt-2">No documents available</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const documentsHtml = documents.map(doc => `
+                <div class="document-item mb-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-file-pdf text-danger me-3" style="font-size: 1.5rem;"></i>
+                                <div>
+                                    <h6 class="mb-1">${doc.title}</h6>
+                                    <div class="d-flex gap-2 align-items-center">
+                                        <span class="document-type-badge bg-primary text-white">${doc.documentType}</span>
+                                        ${doc.filedDate ? `<small class="text-muted">Filed: ${doc.filedDate}</small>` : ''}
+                                        ${doc.fileSize ? `<small class="text-muted">Size: ${formatFileSize(doc.fileSize)}</small>` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-md-end mt-2 mt-md-0">
+                            ${doc.isAvailable && doc.downloadUrl ? 
+                                `<a href="${doc.downloadUrl}" class="btn btn-primary btn-sm" target="_blank">
+                                    <i class="fas fa-download me-1"></i> Download PDF
+                                </a>` :
+                                `<button class="btn btn-secondary btn-sm" disabled>
+                                    <i class="fas fa-ban me-1"></i> Not Available
+                                </button>`
+                            }
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            documentsContainer.innerHTML = documentsHtml;
+        }
+
+        function formatCaseType(caseType) {
+            const types = {
+                'civil': 'Civil Case',
+                'criminal': 'Criminal Case',
+                'writ': 'Writ Petition',
+                'appeal': 'Appeal',
+                'revision': 'Revision',
+                'execution': 'Execution'
+            };
+            return types[caseType] || caseType;
+        }
+
+        function formatCourt(court) {
+            return court === 'high-court' ? 'Delhi High Court' : 'Delhi District Court';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+    </script>
+</body>
+</html>

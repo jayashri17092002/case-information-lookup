@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="180" height="60" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f8f9fa;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#e9ecef;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="180" height="60" fill="url(#bg)" stroke="#ced4da" stroke-width="2"/>
+  
+  <!-- Grid pattern -->
+  <defs>
+    <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
+      <path d="M 10 0 L 0 0 0 10" fill="none" stroke="#dee2e6" stroke-width="0.5" opacity="0.3"/>
+    </pattern>
+  </defs>
+  <rect width="180" height="60" fill="url(#grid)"/>
+  
+  <!-- CAPTCHA Text: DEF67 -->
+  <text x="25" y="38" font-family="Times, serif" font-size="26" font-weight="bold" 
+        fill="#dc3545" transform="rotate(-3 25 38)">D</text>
+  <text x="50" y="42" font-family="Times, serif" font-size="26" font-weight="bold" 
+        fill="#007bff" transform="rotate(2 50 42)">E</text>
+  <text x="75" y="36" font-family="Times, serif" font-size="26" font-weight="bold" 
+        fill="#28a745" transform="rotate(-1 75 36)">F</text>
+  <text x="105" y="40" font-family="Times, serif" font-size="26" font-weight="bold" 
+        fill="#fd7e14" transform="rotate(3 105 40)">6</text>
+  <text x="130" y="38" font-family="Times, serif" font-size="26" font-weight="bold" 
+        fill="#6f42c1" transform="rotate(-2 130 38)">7</text>
+  
+  <!-- Distortion elements -->
+  <ellipse cx="90" cy="30" rx="40" ry="8" fill="none" stroke="#6c757d" stroke-width="1" opacity="0.2"/>
+  <line x1="0" y1="25" x2="180" y2="35" stroke="#6c757d" stroke-width="1" opacity="0.2"/>
+</svg>
